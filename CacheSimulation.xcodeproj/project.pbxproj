@@ -14,6 +14,10 @@
 		9FF78B182B01DF74000007CE /* CacheSimulationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B172B01DF74000007CE /* CacheSimulationTests.swift */; };
 		9FF78B222B01DF74000007CE /* CacheSimulationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B212B01DF74000007CE /* CacheSimulationUITests.swift */; };
 		9FF78B242B01DF74000007CE /* CacheSimulationUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B232B01DF74000007CE /* CacheSimulationUITestsLaunchTests.swift */; };
+		9FF78B322B01E091000007CE /* CacheSetupForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B312B01E091000007CE /* CacheSetupForm.swift */; };
+		9FF78B352B01E46B000007CE /* CacheType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B342B01E46B000007CE /* CacheType.swift */; };
+		9FF78B372B01E619000007CE /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B362B01E619000007CE /* Cache.swift */; };
+		9FF78B392B01F479000007CE /* CollisionHandlingStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B382B01F479000007CE /* CollisionHandlingStrategy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +49,10 @@
 		9FF78B1D2B01DF74000007CE /* CacheSimulationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CacheSimulationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FF78B212B01DF74000007CE /* CacheSimulationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheSimulationUITests.swift; sourceTree = "<group>"; };
 		9FF78B232B01DF74000007CE /* CacheSimulationUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheSimulationUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		9FF78B312B01E091000007CE /* CacheSetupForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheSetupForm.swift; sourceTree = "<group>"; };
+		9FF78B342B01E46B000007CE /* CacheType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheType.swift; sourceTree = "<group>"; };
+		9FF78B362B01E619000007CE /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
+		9FF78B382B01F479000007CE /* CollisionHandlingStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollisionHandlingStrategy.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +103,8 @@
 		9FF78B042B01DF6D000007CE /* CacheSimulation */ = {
 			isa = PBXGroup;
 			children = (
+				9FF78B332B01E45C000007CE /* Models */,
+				9FF78B302B01E06D000007CE /* Views */,
 				9FF78B052B01DF6D000007CE /* CacheSimulationApp.swift */,
 				9FF78B072B01DF6D000007CE /* ContentView.swift */,
 				9FF78B092B01DF73000007CE /* Assets.xcassets */,
@@ -127,6 +137,24 @@
 				9FF78B232B01DF74000007CE /* CacheSimulationUITestsLaunchTests.swift */,
 			);
 			path = CacheSimulationUITests;
+			sourceTree = "<group>";
+		};
+		9FF78B302B01E06D000007CE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9FF78B312B01E091000007CE /* CacheSetupForm.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9FF78B332B01E45C000007CE /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9FF78B342B01E46B000007CE /* CacheType.swift */,
+				9FF78B362B01E619000007CE /* Cache.swift */,
+				9FF78B382B01F479000007CE /* CollisionHandlingStrategy.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,7 +287,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FF78B352B01E46B000007CE /* CacheType.swift in Sources */,
+				9FF78B372B01E619000007CE /* Cache.swift in Sources */,
+				9FF78B322B01E091000007CE /* CacheSetupForm.swift in Sources */,
 				9FF78B082B01DF6D000007CE /* ContentView.swift in Sources */,
+				9FF78B392B01F479000007CE /* CollisionHandlingStrategy.swift in Sources */,
 				9FF78B062B01DF6D000007CE /* CacheSimulationApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,6 +386,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_DISABLE_SAFETY_CHECKS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -408,6 +441,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_DISABLE_SAFETY_CHECKS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
 		};
@@ -437,7 +472,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.6;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kpchew.CacheSimulation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -475,7 +510,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.6;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kpchew.CacheSimulation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
