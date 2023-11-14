@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 
 struct Cache: Hashable {
     init(cacheType: CacheType, collisionStrategy: CollisionHandlingStrategy, cacheSizePower: Int, lineSizePower: Int, setSizePower: Int) {
@@ -33,7 +34,7 @@ struct Cache: Hashable {
         
         self.tagSizePower = 32 - numSetsPower - lineSizePower
         
-        self.cache = Array(repeating: [-1, -1], count: numLines)
+        self.cache = Array(repeating: nil, count: numLines)
     }
     
     let cacheSizePower: Int
@@ -52,25 +53,29 @@ struct Cache: Hashable {
     
     let tagSizePower: Int
     
-    private var cache = [[Int]]()
+    private var cache = [CacheItem?]()
     
     mutating func resetCache() {
-        self.cache = Array(repeating: [-1, -1], count: numLines)
+        self.cache = Array(repeating: nil, count: numLines)
     }
     
-    mutating func checkCache(address: UInt32, counter: Int) -> Bool {
+    /// Checks whether the given address is stored in the cache, and adds or updates it if necessary.
+    /// - Parameters:
+    ///   - address: A memory address to check.
+    ///   - time: A number representing the current time that is monotonically increasing.
+    /// - Returns: A boolean describing whether the item was in the cache or not.
+    mutating func checkCache(address: UInt32, time: Int) -> Bool {
         let tag = Int(address >> (32 - tagSizePower)) // leftmost tagSize bits
         let set = Int(((address << (tagSizePower)) >> (tagSizePower + lineSizePower)))
         
-        if (cacheType == .directMapped) {
-            if (cache[set][0] == tag) {
-                if (collisionStrategy == .leastRecentlyUsed) {
-                    cache[set][1] = counter
+        if cacheType == .directMapped {
+            if var item = cache[set], item.tag == tag {
+                if collisionStrategy == .leastRecentlyUsed {
+                    item.timeLastUsed = time
                 }
                 return true
             } else {
-                cache[set][0] = tag
-                cache[set][1] = counter
+                cache[set] = CacheItem(tag: tag, timeLastUsed: time)
                 return false
             }
         }
@@ -78,30 +83,35 @@ struct Cache: Hashable {
         let setIndexStart = set * setSize
         let setIndexEnd = setIndexStart + setSize
         
-        var emptyIndex = -1
-        var smallestCounter = Int.max
-        var smallestCounterIndex = -1
+        var emptyIndex: Int?
+        var earliestTime = Int.max
+        var earliestTimeIndex: Int?
         
         for index in setIndexStart..<setIndexEnd {
-            if (cache[index][0] == tag) { // found
-                if (collisionStrategy == .leastRecentlyUsed) {
-                    cache[index][1] = counter
+            guard var item = cache[index] else {
+                if emptyIndex == nil {
+                    emptyIndex = index
+                }
+                continue
+            }
+            
+            if item.tag == tag { // found
+                if collisionStrategy == .leastRecentlyUsed {
+                    item.timeLastUsed = time
                 }
                 return true
-            } else if (cache[index][0] == -1 && emptyIndex == -1) { // find empty spot to put item
-                emptyIndex = index
-            } else if (cache[index][1] < smallestCounter) { // find oldest item to replace later
-                smallestCounter = cache[index][1]
-                smallestCounterIndex = index
+            } else if item.timeLastUsed < earliestTime { // find oldest item to replace later
+                earliestTime = item.timeLastUsed
+                earliestTimeIndex = index
             }
         }
         
-        if (emptyIndex != -1) {
-            cache[emptyIndex][0] = tag
-            cache[emptyIndex][1] = counter
+        if let emptyIndex = emptyIndex {
+            cache[emptyIndex] = CacheItem(tag: tag, timeLastUsed: time)
+        } else if let earliestTimeIndex = earliestTimeIndex {
+            cache[earliestTimeIndex] = CacheItem(tag: tag, timeLastUsed: time)
         } else {
-            cache[smallestCounterIndex][0] = tag
-            cache[smallestCounterIndex][1] = counter
+            Logger().error("No valid indices for item in cache. This should never happen.")
         }
         return false
     }

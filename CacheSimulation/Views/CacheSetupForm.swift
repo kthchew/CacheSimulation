@@ -11,6 +11,8 @@ import UniformTypeIdentifiers
 struct CacheSetupForm: View {
     @State private var addressInput = [UInt32]()
     @State private var showingFilePicker = false
+    @State private var selectedFilename = ""
+    @State private var selectedFileIcon: NSImage?
     
     @ObservedObject var matrix: CacheMatrix
     
@@ -79,35 +81,50 @@ struct CacheSetupForm: View {
             }
             
             Section {
-                Button {
-                    showingFilePicker = true
-                } label: {
-                    Text("Choose File")
-                }
-                .fileImporter(isPresented: $showingFilePicker, allowedContentTypes: [.plainText, UTType(filenameExtension: "trace")!], allowsMultipleSelection: false) { result in
-                    switch result {
-                    case .success(let files):
-                        files.forEach { file in
-                            let accessed = file.startAccessingSecurityScopedResource()
-                            if !accessed { return }
-                            
-                            do {
-                                addressInput = try String(contentsOf: file, encoding: .utf8)
-                                    .components(separatedBy: .whitespacesAndNewlines)
-                                    .filter { word in
-                                        word.starts(with: "0x")
-                                    }
-                                    .compactMap {
-                                        UInt32($0.dropFirst(2), radix: 16)
-                                    }
-                            } catch {
-                                return
+                HStack {
+                    Button {
+                        showingFilePicker = true
+                    } label: {
+                        Text("Choose File")
+                    }
+                    .fileImporter(isPresented: $showingFilePicker, allowedContentTypes: [.plainText, UTType(filenameExtension: "trace")!], allowsMultipleSelection: false) { result in
+                        switch result {
+                        case .success(let files):
+                            files.forEach { file in
+                                let accessed = file.startAccessingSecurityScopedResource()
+                                if !accessed { return }
+                                
+                                do {
+                                    selectedFilename = file.lastPathComponent
+                                    selectedFileIcon = NSWorkspace.shared.icon(forFile: file.relativePath)
+                                    
+                                    addressInput = try String(contentsOf: file, encoding: .utf8)
+                                        .components(separatedBy: .whitespacesAndNewlines)
+                                        .filter { word in
+                                            word.starts(with: "0x")
+                                        }
+                                        .compactMap {
+                                            UInt32($0.dropFirst(2), radix: 16)
+                                        }
+                                } catch {
+                                    selectedFilename = ""
+                                    selectedFileIcon = nil
+                                    return
+                                }
+                                
+                                file.stopAccessingSecurityScopedResource()
                             }
-                            
-                            file.stopAccessingSecurityScopedResource()
+                        case .failure(let error):
+                            print(error)
                         }
-                    case .failure(let error):
-                        print(error)
+                    }
+                    
+                    if let icon = selectedFileIcon {
+                        Image(nsImage: icon)
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                        Text(selectedFilename)
+                            .font(.caption)
                     }
                 }
                 

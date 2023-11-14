@@ -97,17 +97,17 @@ import SwiftUI
     
     nonisolated private func runSimulation(withCacheType cacheType: CacheType, collisionStrategy: CollisionHandlingStrategy, cacheSizePower: Int, lineSizePower: Int, setSizePower: Int, addresses: [UInt32]) async {
         var hits = 0
-        var counter = 0
+        var time = 0
         var cache = Cache(cacheType: cacheType, collisionStrategy: collisionStrategy, cacheSizePower: cacheSizePower, lineSizePower: lineSizePower, setSizePower: setSizePower)
         for address in addresses {
-            let found = cache.checkCache(address: address, counter: counter)
+            let found = cache.checkCache(address: address, time: time)
             if found {
                 hits += 1
             }
-            counter += 1
+            time += 1
         }
         
-        let result = SimulationResult(type: cacheType, cacheSizePower: cacheSizePower, lineSizePower: lineSizePower, setSizePower: setSizePower, collisionStrategy: collisionStrategy, hits: hits, totalRequests: counter)
+        let result = SimulationResult(type: cacheType, cacheSizePower: cacheSizePower, lineSizePower: lineSizePower, setSizePower: setSizePower, collisionStrategy: collisionStrategy, hits: hits, totalRequests: time)
         
         Task { @MainActor in
             results.append(result)
