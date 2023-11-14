@@ -13,6 +13,7 @@ struct CacheSetupForm: View {
     @State private var showingFilePicker = false
     @State private var selectedFilename = ""
     @State private var selectedFileIcon: NSImage?
+    @State private var isLoadingFile = false
     
     @ObservedObject var matrix: CacheMatrix
     
@@ -81,7 +82,7 @@ struct CacheSetupForm: View {
             }
             
             Section {
-                HStack {
+                VStack(alignment: .leading) {
                     Button {
                         showingFilePicker = true
                     } label: {
@@ -90,41 +91,29 @@ struct CacheSetupForm: View {
                     .fileImporter(isPresented: $showingFilePicker, allowedContentTypes: [.plainText, UTType(filenameExtension: "trace")!], allowsMultipleSelection: false) { result in
                         switch result {
                         case .success(let files):
-                            files.forEach { file in
-                                let accessed = file.startAccessingSecurityScopedResource()
-                                if !accessed { return }
-                                
-                                do {
-                                    selectedFilename = file.lastPathComponent
-                                    selectedFileIcon = NSWorkspace.shared.icon(forFile: file.relativePath)
-                                    
-                                    addressInput = try String(contentsOf: file, encoding: .utf8)
-                                        .components(separatedBy: .whitespacesAndNewlines)
-                                        .filter { word in
-                                            word.starts(with: "0x")
-                                        }
-                                        .compactMap {
-                                            UInt32($0.dropFirst(2), radix: 16)
-                                        }
-                                } catch {
-                                    selectedFilename = ""
-                                    selectedFileIcon = nil
-                                    return
-                                }
-                                
-                                file.stopAccessingSecurityScopedResource()
+                            Task {
+                                await loadFiles(files)
                             }
                         case .failure(let error):
                             print(error)
                         }
                     }
+                    .disabled(isLoadingFile)
                     
-                    if let icon = selectedFileIcon {
-                        Image(nsImage: icon)
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                        Text(selectedFilename)
-                            .font(.caption)
+                    HStack {
+                        if let icon = selectedFileIcon {
+                            Image(nsImage: icon)
+                                .resizable()
+                                .frame(width: 16, height: 16)
+                            Text(selectedFilename)
+                                .font(.caption)
+                                .padding(.trailing, 4)
+                        }
+                        
+                        if isLoadingFile {
+                            ProgressView()
+                                .controlSize(.mini)
+                        }
                     }
                 }
                 
@@ -141,14 +130,52 @@ struct CacheSetupForm: View {
                     )
                     if matrix.isRunning {
                         ProgressView()
-                        .controlSize(.small)
-                        .padding(2)
+                            .controlSize(.small)
+                            .padding(2)
                     }
                 }
             }
             
         }
         .formStyle(.grouped)
+    }
+    
+    nonisolated func loadFiles(_ files: [URL]) async {
+        files.forEach { file in
+            let accessed = file.startAccessingSecurityScopedResource()
+            if !accessed { return }
+            
+            do {
+                Task { @MainActor in
+                    isLoadingFile = true
+                    selectedFilename = file.lastPathComponent
+                    selectedFileIcon = NSWorkspace.shared.icon(forFile: file.relativePath)
+                }
+                
+                let addresses = try String(contentsOf: file, encoding: .utf8)
+                    .components(separatedBy: .whitespacesAndNewlines)
+                    .filter { word in
+                        word.starts(with: "0x")
+                    }
+                    .compactMap {
+                        UInt32($0.dropFirst(2), radix: 16)
+                    }
+                
+                Task { @MainActor in
+                    addressInput = addresses
+                    isLoadingFile = false
+                }
+            } catch {
+                Task { @MainActor in
+                    isLoadingFile = false
+                    selectedFilename = ""
+                    selectedFileIcon = nil
+                }
+                return
+            }
+            
+            file.stopAccessingSecurityScopedResource()
+        }
     }
 }
 
