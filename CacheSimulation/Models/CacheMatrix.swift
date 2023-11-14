@@ -8,7 +8,9 @@
 import Foundation
 import SwiftUI
 
-class CacheMatrix: ObservableObject {
+@MainActor class CacheMatrix: ObservableObject {
+    @Published var isRunning = false
+    
     @Published var cacheSizePowerLow = 10
     @Published var cacheSizePowerHigh = 12
     
@@ -93,7 +95,7 @@ class CacheMatrix: ObservableObject {
     
     @Published var results = [SimulationResult]()
     
-    private func runSimulation(withCacheType cacheType: CacheType, collisionStrategy: CollisionHandlingStrategy, cacheSizePower: Int, lineSizePower: Int, setSizePower: Int, addresses: [UInt32], results: inout [SimulationResult]) {
+    nonisolated private func runSimulation(withCacheType cacheType: CacheType, collisionStrategy: CollisionHandlingStrategy, cacheSizePower: Int, lineSizePower: Int, setSizePower: Int, addresses: [UInt32]) async {
         var hits = 0
         var counter = 0
         var cache = Cache(cacheType: cacheType, collisionStrategy: collisionStrategy, cacheSizePower: cacheSizePower, lineSizePower: lineSizePower, setSizePower: setSizePower)
@@ -106,22 +108,31 @@ class CacheMatrix: ObservableObject {
         }
         
         let result = SimulationResult(type: cacheType, cacheSizePower: cacheSizePower, lineSizePower: lineSizePower, setSizePower: setSizePower, collisionStrategy: collisionStrategy, hits: hits, totalRequests: counter)
-        results.append(result)
+        
+        Task { @MainActor in
+            results.append(result)
+        }
     }
     
     func runSimulations(with addresses: [UInt32]) {
-        for cacheSizePower in cacheSizePowerLow...cacheSizePowerHigh {
-            for collisionStrategy in collisionStrategies {
-                for cacheType in cacheTypes {
-                    if (cacheType == .setAssociative) {
-                        for setSizePower in setSizePowerLow...setSizePowerHigh {
-                            runSimulation(withCacheType: cacheType, collisionStrategy: collisionStrategy, cacheSizePower: cacheSizePower, lineSizePower: lineSizePower, setSizePower: setSizePower, addresses: addresses, results: &results)
+        isRunning = true
+        
+        Task {
+            for cacheSizePower in cacheSizePowerLow...cacheSizePowerHigh {
+                for collisionStrategy in collisionStrategies {
+                    for cacheType in cacheTypes {
+                        if (cacheType == .setAssociative) {
+                            for setSizePower in setSizePowerLow...setSizePowerHigh {
+                                await self.runSimulation(withCacheType: cacheType, collisionStrategy: collisionStrategy, cacheSizePower: cacheSizePower, lineSizePower: self.lineSizePower, setSizePower: setSizePower, addresses: addresses)
+                            }
+                        } else {
+                            await self.runSimulation(withCacheType: cacheType, collisionStrategy: collisionStrategy, cacheSizePower: cacheSizePower, lineSizePower: self.lineSizePower, setSizePower: 0, addresses: addresses)
                         }
-                    } else {
-                        runSimulation(withCacheType: cacheType, collisionStrategy: collisionStrategy, cacheSizePower: cacheSizePower, lineSizePower: lineSizePower, setSizePower: 0, addresses: addresses, results: &results)
                     }
                 }
             }
+            
+            isRunning = false
         }
     }
 }

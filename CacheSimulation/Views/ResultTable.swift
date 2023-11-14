@@ -11,9 +11,10 @@ struct ResultTable: View {
     @State private var sortOrder = [KeyPathComparator(\SimulationResult.type)]
     
     @ObservedObject var matrix: CacheMatrix
+    @Binding var selected: Set<SimulationResult.ID>
     
     var body: some View {
-        Table(matrix.results, sortOrder: $sortOrder) {
+        Table(matrix.results, selection: $selected, sortOrder: $sortOrder) {
             TableColumn("Cache Type", value: \.type) { result in
                 Text("\(result.type == .setAssociative ? "\(1 << result.setSizePower)-way " : "")\(result.type.rawValue) \(result.type != .directMapped ? "(\(result.collisionStrategy.rawValue))" : "")")
             }
@@ -34,5 +35,5 @@ struct ResultTable: View {
 }
 
 #Preview {
-    ResultTable(matrix: CacheMatrix())
+    ResultTable(matrix: CacheMatrix(), selected: .constant([]))
 }

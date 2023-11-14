@@ -111,14 +111,23 @@ struct CacheSetupForm: View {
                     }
                 }
                 
-                Button {
-                    matrix.runSimulations(with: addressInput)
-                } label: {
-                    Text("Test")
+                HStack {
+                    Button {
+                        matrix.runSimulations(with: addressInput)
+                    } label: {
+                        Text("Test")
+                    }
+                    .disabled(
+                        ((matrix.cacheTypes.contains(.setAssociative) && (matrix.cacheSizePowerLow < matrix.setSizePowerHigh + matrix.lineSizePower)))
+                        || addressInput.isEmpty
+                        || matrix.isRunning
+                    )
+                    if matrix.isRunning {
+                        ProgressView()
+                        .controlSize(.small)
+                        .padding(2)
+                    }
                 }
-                .disabled(
-                    ((matrix.cacheTypes.contains(.setAssociative) && (matrix.cacheSizePowerLow < matrix.setSizePowerHigh + matrix.lineSizePower)))
-                    || addressInput.isEmpty)
             }
             
         }
