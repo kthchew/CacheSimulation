@@ -119,9 +119,14 @@ import SwiftUI
         
         Task {
             for cacheSizePower in cacheSizePowerLow...cacheSizePowerHigh {
-                for collisionStrategy in collisionStrategies {
-                    for cacheType in cacheTypes {
-                        if (cacheType == .setAssociative) {
+                for cacheType in cacheTypes {
+                    guard cacheType != .directMapped else {
+                        await self.runSimulation(withCacheType: cacheType, collisionStrategy: .firstInFirstOut, cacheSizePower: cacheSizePower, lineSizePower: self.lineSizePower, setSizePower: 0, addresses: addresses)
+                        continue
+                    }
+                    
+                    for collisionStrategy in collisionStrategies {
+                        if cacheType == .setAssociative {
                             for setSizePower in setSizePowerLow...setSizePowerHigh {
                                 await self.runSimulation(withCacheType: cacheType, collisionStrategy: collisionStrategy, cacheSizePower: cacheSizePower, lineSizePower: self.lineSizePower, setSizePower: setSizePower, addresses: addresses)
                             }
