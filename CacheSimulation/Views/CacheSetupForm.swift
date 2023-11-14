@@ -26,36 +26,31 @@ struct CacheSetupForm: View {
                     Text("Cache Size (High)")
                     Text("2^\(matrix.cacheSizePowerHigh) (\(pow(2, matrix.cacheSizePowerHigh).formatted())) bytes")
                 }
-            }
-            
-            Section {
+                
                 Stepper(value: $matrix.lineSizePower, in: 1...matrix.cacheSizePowerLow) {
                     Text("Line Size")
                     Text("2^\(matrix.lineSizePower) (\(pow(2, matrix.lineSizePower).formatted())) bytes")
                 }
+            } header: {
+                Text("Sizes")
             }
             
             Section {
-                ForEach(CacheType.allCases, id: \.hashValue) { type in
-                    Button {
-                        if matrix.cacheTypes.contains(type) {
-                            matrix.cacheTypes.remove(type)
-                        } else {
-                            matrix.cacheTypes.insert(type)
-                        }
-                    } label: {
-                        HStack {
-                            Text(type.rawValue)
-                            
-                            if matrix.cacheTypes.contains(type) {
-                                Spacer()
-                                Image(systemName: "checkmark")
-                            }
-                        }
-                    }
+                Toggle(isOn: $matrix.directMappedEnabled) {
+                    Text("Direct Mapped")
                 }
-                
-                if matrix.cacheTypes.contains(.setAssociative) {
+                Toggle(isOn: $matrix.fullyAssociativeEnabled) {
+                    Text("Fully Associative")
+                }
+                Toggle(isOn: $matrix.setAssociativeEnabled) {
+                    Text("Set Associative")
+                }
+            } header: {
+                Text("Cache Organization")
+            }
+            
+            if matrix.cacheTypes.contains(.setAssociative) {
+                Section {
                     Stepper(value: $matrix.setSizePowerLow, in: 1...max(4, matrix.setSizePowerHigh)) {
                         Text("Lines Per Set (Low)")
                         Text("2^\(matrix.setSizePowerLow) (\(pow(2, matrix.setSizePowerLow).formatted())) lines")
@@ -65,31 +60,23 @@ struct CacheSetupForm: View {
                         Text("Lines Per Set (High)")
                         Text("2^\(matrix.setSizePowerHigh) (\(pow(2, matrix.setSizePowerHigh).formatted())) lines")
                     }
-                }
-                
-                if matrix.cacheTypes.contains(.setAssociative) || matrix.cacheTypes.contains(.fullyAssociative) {
-                    ForEach(CollisionHandlingStrategy.allCases, id: \.hashValue) { strategy in
-                        Button {
-                            if matrix.collisionStrategies.contains(strategy) {
-                                matrix.collisionStrategies.remove(strategy)
-                            } else {
-                                matrix.collisionStrategies.insert(strategy)
-                            }
-                        } label: {
-                            HStack {
-                                Text(strategy.rawValue)
-                                
-                                if matrix.collisionStrategies.contains(strategy) {
-                                    Spacer()
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
-                    }
+                } header: {
+                    Text("Set Sizes (Set Associative)")
                 }
             }
             
-            //            TextEditor(text: $addressInput)
+            if matrix.cacheTypes.contains(.setAssociative) || matrix.cacheTypes.contains(.fullyAssociative) {
+                Section {
+                    Toggle(isOn: $matrix.fifoEnabled) {
+                        Text("First In First Out (FIFO)")
+                    }
+                    Toggle(isOn: $matrix.lruEnabled) {
+                        Text("Least Recently Used (LRU)")
+                    }
+                } header: {
+                    Text("Collision Resolution")
+                }
+            }
             
             Section {
                 Button {
@@ -131,7 +118,7 @@ struct CacheSetupForm: View {
                 }
                 .disabled(
                     ((matrix.cacheTypes.contains(.setAssociative) && (matrix.cacheSizePowerLow < matrix.setSizePowerHigh + matrix.lineSizePower)))
-                          || addressInput.isEmpty)
+                    || addressInput.isEmpty)
             }
             
         }

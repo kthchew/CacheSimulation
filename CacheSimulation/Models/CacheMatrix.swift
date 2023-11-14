@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class CacheMatrix: ObservableObject {
     @Published var cacheSizePowerLow = 10
@@ -14,11 +15,81 @@ class CacheMatrix: ObservableObject {
     @Published var lineSizePower = 6
     
     @Published var cacheTypes: Set<CacheType> = [CacheType.directMapped]
+    var directMappedEnabled: Bool {
+        get {
+            cacheTypes.contains(.directMapped)
+        }
+        set {
+            withAnimation {
+                if newValue {
+                    cacheTypes.insert(.directMapped)
+                } else {
+                    cacheTypes.remove(.directMapped)
+                }
+            }
+        }
+    }
+    var fullyAssociativeEnabled: Bool {
+        get {
+            cacheTypes.contains(.fullyAssociative)
+        }
+        set {
+            withAnimation {
+                if newValue {
+                    cacheTypes.insert(.fullyAssociative)
+                } else {
+                    cacheTypes.remove(.fullyAssociative)
+                }
+            }
+        }
+    }
+    var setAssociativeEnabled: Bool {
+        get {
+            cacheTypes.contains(.setAssociative)
+        }
+        set {
+            withAnimation {
+                if newValue {
+                    cacheTypes.insert(.setAssociative)
+                } else {
+                    cacheTypes.remove(.setAssociative)
+                }
+            }
+        }
+    }
     
     @Published var setSizePowerLow = 1
     @Published var setSizePowerHigh = 3
     
     @Published var collisionStrategies: Set<CollisionHandlingStrategy> = [CollisionHandlingStrategy.leastRecentlyUsed]
+    var fifoEnabled: Bool {
+        get {
+            collisionStrategies.contains(.firstInFirstOut)
+        }
+        set {
+            withAnimation {
+                if newValue {
+                    collisionStrategies.insert(.firstInFirstOut)
+                } else {
+                    collisionStrategies.remove(.firstInFirstOut)
+                }
+            }
+        }
+    }
+    var lruEnabled: Bool {
+        get {
+            collisionStrategies.contains(.leastRecentlyUsed)
+        }
+        set {
+            withAnimation {
+                if newValue {
+                    collisionStrategies.insert(.leastRecentlyUsed)
+                } else {
+                    collisionStrategies.remove(.leastRecentlyUsed)
+                }
+            }
+        }
+    }
     
     @Published var results = [SimulationResult]()
     
