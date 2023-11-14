@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var matrix = CacheMatrix()
+    
     var body: some View {
-        CacheSetupForm()
+        NavigationSplitView {
+            CacheSetupForm(matrix: matrix)
+        } detail: {
+            ResultTable(matrix: matrix)
+        }
     }
 }
 

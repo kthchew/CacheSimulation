@@ -7,88 +7,58 @@
 
 import Foundation
 
-@MainActor class Cache: ObservableObject {
-    @Published var cacheSizePower = 10 {
-        didSet {
-            clearCachedProperties()
+struct Cache: Hashable {
+    init(cacheType: CacheType, collisionStrategy: CollisionHandlingStrategy, cacheSizePower: Int, lineSizePower: Int, setSizePower: Int) {
+        self.cacheSizePower = cacheSizePower
+        self.lineSizePower = lineSizePower
+        self.cacheType = cacheType
+        self.collisionStrategy = collisionStrategy
+        
+        self.numLinesPower = cacheSizePower - lineSizePower
+        self.numLines = 1 << numLinesPower
+        
+        switch cacheType {
+        case .directMapped:
+            self.setSizePower = 0
+        case .fullyAssociative:
+            self.setSizePower = numLinesPower
+        case .setAssociative:
+            self.setSizePower = setSizePower
         }
+        
+        self.setSize = 1 << self.setSizePower
+        
+        self.numSetsPower = numLinesPower - self.setSizePower
+        self.numSets = 1 << numSetsPower
+        
+        self.tagSizePower = 32 - numSetsPower - lineSizePower
+        
+        self.cache = Array(repeating: [-1, -1], count: numLines)
     }
-    @Published var lineSizePower = 6 {
-        didSet {
-            clearCachedProperties()
-        }
-    }
-    @Published var cacheType = CacheType.directMapped {
-        didSet {
-            clearCachedProperties()
-        }
-    }
-    @Published var setSizePowerInput = 2 {
-        didSet {
-            clearCachedProperties()
-        }
-    }
-    @Published var collisionStrategy = CollisionHandlingStrategy.leastRecentlyUsed
+    
+    let cacheSizePower: Int
+    let lineSizePower: Int
+    let setSizePower: Int
+    let cacheType: CacheType
+    let collisionStrategy: CollisionHandlingStrategy
+    
+    let numLinesPower: Int
+    let numLines: Int
+    
+    let setSize: Int
+    
+    let numSetsPower: Int
+    let numSets: Int
+    
+    let tagSizePower: Int
     
     private var cache = [[Int]]()
     
-    var numLinesPower: Int {
-        cacheSizePower - lineSizePower
+    mutating func resetCache() {
+        self.cache = Array(repeating: [-1, -1], count: numLines)
     }
     
-    var numLines: Int {
-        1 << numLinesPower
-    }
-    
-    var setSizePower: Int {
-        switch cacheType {
-        case .directMapped:
-            0
-        case .fullyAssociative:
-            numLinesPower
-        case .setAssociative:
-            setSizePowerInput
-        }
-    }
-    
-    private var _setSize: Int? // caching because this calculation is a bottleneck for large inputs
-    var setSize: Int {
-        if let _setSize = _setSize {
-            return _setSize
-        } else {
-            _setSize = 1 << setSizePower
-            return _setSize!
-        }
-    }
-    
-    var numSetsPower: Int {
-        numLinesPower - setSizePower
-    }
-    
-    var numSets: Int {
-        1 << numSetsPower
-    }
-    
-    private var _tagSizePower: Int? // caching because this calculation is a bottleneck for large inputs
-    var tagSizePower: Int {
-        if let _tagSizePower = _tagSizePower {
-            return _tagSizePower
-        } else {
-            _tagSizePower = 32 - numSetsPower - lineSizePower
-            return _tagSizePower!
-        }
-    }
-    
-    private func clearCachedProperties() {
-        _setSize = nil
-        _tagSizePower = nil
-    }
-    
-    func initializeCache() {
-        cache = Array(repeating: [-1, -1], count: numLines)
-    }
-    
-    func checkCache(address: UInt32, counter: Int) -> Bool {
+    mutating func checkCache(address: UInt32, counter: Int) -> Bool {
         let tag = Int(address >> (32 - tagSizePower)) // leftmost tagSize bits
         let set = Int(((address << (tagSizePower)) >> (tagSizePower + lineSizePower)))
         

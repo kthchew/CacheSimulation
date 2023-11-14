@@ -7,6 +7,7 @@
 
 import Foundation
 
-enum CollisionHandlingStrategy: Hashable {
-    case firstInFirstOut, leastRecentlyUsed
+enum CollisionHandlingStrategy: String, Hashable, CaseIterable {
+    case firstInFirstOut = "FIFO"
+    case leastRecentlyUsed = "LRU"
 }

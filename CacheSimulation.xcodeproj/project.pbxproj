@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F1764C62B02CF9E001AACCB /* CacheMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1764C52B02CF9E001AACCB /* CacheMatrix.swift */; };
+		9F1764C82B02D032001AACCB /* SimulationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1764C72B02D032001AACCB /* SimulationResult.swift */; };
+		9F7DD2772B03305A007F7D4F /* ResultTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7DD2762B03305A007F7D4F /* ResultTable.swift */; };
 		9FF78B062B01DF6D000007CE /* CacheSimulationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B052B01DF6D000007CE /* CacheSimulationApp.swift */; };
 		9FF78B082B01DF6D000007CE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF78B072B01DF6D000007CE /* ContentView.swift */; };
 		9FF78B0A2B01DF73000007CE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9FF78B092B01DF73000007CE /* Assets.xcassets */; };
@@ -38,6 +41,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9F1764C52B02CF9E001AACCB /* CacheMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheMatrix.swift; sourceTree = "<group>"; };
+		9F1764C72B02D032001AACCB /* SimulationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationResult.swift; sourceTree = "<group>"; };
+		9F7DD2762B03305A007F7D4F /* ResultTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultTable.swift; sourceTree = "<group>"; };
 		9FF78B022B01DF6D000007CE /* CacheSimulation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CacheSimulation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FF78B052B01DF6D000007CE /* CacheSimulationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheSimulationApp.swift; sourceTree = "<group>"; };
 		9FF78B072B01DF6D000007CE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -143,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				9FF78B312B01E091000007CE /* CacheSetupForm.swift */,
+				9F7DD2762B03305A007F7D4F /* ResultTable.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -153,6 +160,8 @@
 				9FF78B342B01E46B000007CE /* CacheType.swift */,
 				9FF78B362B01E619000007CE /* Cache.swift */,
 				9FF78B382B01F479000007CE /* CollisionHandlingStrategy.swift */,
+				9F1764C52B02CF9E001AACCB /* CacheMatrix.swift */,
+				9F1764C72B02D032001AACCB /* SimulationResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -287,10 +296,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F1764C62B02CF9E001AACCB /* CacheMatrix.swift in Sources */,
 				9FF78B352B01E46B000007CE /* CacheType.swift in Sources */,
 				9FF78B372B01E619000007CE /* Cache.swift in Sources */,
 				9FF78B322B01E091000007CE /* CacheSetupForm.swift in Sources */,
 				9FF78B082B01DF6D000007CE /* ContentView.swift in Sources */,
+				9F7DD2772B03305A007F7D4F /* ResultTable.swift in Sources */,
+				9F1764C82B02D032001AACCB /* SimulationResult.swift in Sources */,
 				9FF78B392B01F479000007CE /* CollisionHandlingStrategy.swift in Sources */,
 				9FF78B062B01DF6D000007CE /* CacheSimulationApp.swift in Sources */,
 			);

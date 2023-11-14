@@ -7,6 +7,12 @@
 
 import Foundation
 
-enum CacheType: Hashable {
-    case directMapped, fullyAssociative, setAssociative
+enum CacheType: String, Hashable, CaseIterable, Comparable {
+    case directMapped = "Direct Mapped"
+    case fullyAssociative = "Fully Associative"
+    case setAssociative = "Set Associative"
+    
+    static func <(a: CacheType, b: CacheType) -> Bool {
+        return a.rawValue < b.rawValue
+    }
 }
