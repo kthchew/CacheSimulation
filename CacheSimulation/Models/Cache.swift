@@ -69,9 +69,9 @@ struct Cache: Hashable {
         let set = Int(((address << (tagSizePower)) >> (tagSizePower + lineSizePower)))
         
         if cacheType == .directMapped {
-            if var item = cache[set], item.tag == tag {
+            if let item = cache[set], item.tag == tag {
                 if collisionStrategy == .leastRecentlyUsed {
-                    item.timeLastUsed = time
+                    cache[set]?.timeLastUsed = time
                 }
                 return true
             } else {
@@ -88,7 +88,7 @@ struct Cache: Hashable {
         var earliestTimeIndex: Int?
         
         for index in setIndexStart..<setIndexEnd {
-            guard var item = cache[index] else {
+            guard let item = cache[index] else {
                 if emptyIndex == nil {
                     emptyIndex = index
                 }
@@ -97,7 +97,7 @@ struct Cache: Hashable {
             
             if item.tag == tag { // found
                 if collisionStrategy == .leastRecentlyUsed {
-                    item.timeLastUsed = time
+                    cache[index]?.timeLastUsed = time
                 }
                 return true
             } else if item.timeLastUsed < earliestTime { // find oldest item to replace later
