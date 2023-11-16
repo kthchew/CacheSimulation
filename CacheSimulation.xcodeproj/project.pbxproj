@@ -45,6 +45,8 @@
 /* Begin PBXFileReference section */
 		9F1764C52B02CF9E001AACCB /* CacheMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheMatrix.swift; sourceTree = "<group>"; };
 		9F1764C72B02D032001AACCB /* SimulationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationResult.swift; sourceTree = "<group>"; };
+		9F660B212B05B1F30056EA66 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9F660B222B05B20B0056EA66 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		9F7DD2762B03305A007F7D4F /* ResultTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultTable.swift; sourceTree = "<group>"; };
 		9FDDBB8E2B03E754004EA89F /* CopyableSimulationResultList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyableSimulationResultList.swift; sourceTree = "<group>"; };
 		9FDDBB902B040E92004EA89F /* CacheItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheItem.swift; sourceTree = "<group>"; };
@@ -93,6 +95,8 @@
 		9FF78AF92B01DF6C000007CE = {
 			isa = PBXGroup;
 			children = (
+				9F660B222B05B20B0056EA66 /* LICENSE */,
+				9F660B212B05B1F30056EA66 /* README.md */,
 				9FF78B042B01DF6D000007CE /* CacheSimulation */,
 				9FF78B162B01DF74000007CE /* CacheSimulationTests */,
 				9FF78B202B01DF74000007CE /* CacheSimulationUITests */,
