@@ -68,18 +68,6 @@ struct Cache: Hashable {
         let tag = Int(address >> (32 - tagSizePower)) // leftmost tagSize bits
         let set = Int(((address << (tagSizePower)) >> (tagSizePower + lineSizePower)))
         
-        if cacheType == .directMapped {
-            if let item = cache[set], item.tag == tag {
-                if collisionStrategy == .leastRecentlyUsed {
-                    cache[set]?.timeLastUsed = time
-                }
-                return true
-            } else {
-                cache[set] = CacheItem(tag: tag, timeLastUsed: time)
-                return false
-            }
-        }
-        
         let setIndexStart = set * setSize
         let setIndexEnd = setIndexStart + setSize
         
